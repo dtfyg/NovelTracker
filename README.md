@@ -11,11 +11,21 @@ track of these novels including:
 
 - A description of why I dropped the novel including a brief summary of the plot
 - A rating system 
-- A genre filter function that will allow you to select genres for each novel
+- A genre and rating filter function that will allow you to select genres for each novel
 - A search function 
 - Ranking functions that will sort the list of novels by last read or rating
+- An individual page for every novel that you can enter for specfic details
 
 Aside from myself I think that other webnovel/lightnovel readers will find this
 program to be of use in terms of tracking as the system on NovelUpdates,
 a commonly used site for tracking novels, makes it a bit clunky and difficult to 
 keep track of certain aspects of novels.
+
+## User Stories ##
+
+- As a user, I want to be able to add new novels to the library
+- As a user, I want to be able to view the list of novels
+- As a user, I want to be able to add a rating to a novel
+- As a user, I want to be able to change a rating for a novel
+- As a user, I want to be able to add a genre to a novel
+- As a user, I want to be able to remove a genre from a novel
