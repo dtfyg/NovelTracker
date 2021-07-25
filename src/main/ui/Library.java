@@ -69,7 +69,8 @@ public class Library {
         if (contains) {
             System.out.println("What would you like to do with the book");
             System.out.println("Press R to give it a rating, press G to add a genre, press N to rename the book,");
-            System.out.println("press 1 to get the rating, the genres and the name of the book");
+            System.out.println("Press 1 to get the rating, the genres and the name of the book.");
+            System.out.println("Press 2 to remove a genre from the book.");
             bookAction = scan.nextLine();
             useBook(bookAction, list.get(position));
         } else {
@@ -94,6 +95,9 @@ public class Library {
                 System.out.println("The name of the novel is " + novel.getName());
                 System.out.println("The rating of " + novel.getName() + " is " + novel.getRating());
                 System.out.println("The genres of " + novel.getName() + " are " + novel.getGenre());
+                break;
+            case "2":
+                removeGen(novel);
                 break;
             default:
                 System.out.println("Your command was not recognized");
@@ -165,6 +169,15 @@ public class Library {
             System.out.print("[" + n.getName() + "]");
             System.out.println(" ");
         }
+    }
+
+    public void removeGen(Novel n) {
+        String s;
+        System.out.println("The current Genres of the book are:");
+        System.out.println(n.getGenre());
+        System.out.println("Please type the name of the one you want to remove.");
+        s = scan.nextLine();
+        n.removeGenre(s);
     }
 
 }
