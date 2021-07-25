@@ -27,5 +27,5 @@ keep track of certain aspects of novels.
 - As a user, I want to be able to view the list of novels
 - As a user, I want to be able to add a rating to a novel
 - As a user, I want to be able to change a rating for a novel
-- As a user, I want to be able to add a genre to a novel
+- As a user, I want to be able to add multiple genres to a novel
 - As a user, I want to be able to remove a genre from a novel
