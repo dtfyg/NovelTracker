@@ -66,8 +66,7 @@ public class Novel {
 
     //Requires: this novel has a genre
     //Modifies: this
-    //Effects: Removes the genre from this novel and return true,
-    // otherwise return false if the genre does not exist
+    //Effects: Removes the genre from this novel and return true, otherwise return false if the genre does not exist
     public boolean removeGenre(String genre) {
         if (this.genre.contains(genre)) {
             this.genre.remove(genre);
@@ -92,5 +91,4 @@ public class Novel {
     public String getName() {
         return this.name;
     }
-
 }

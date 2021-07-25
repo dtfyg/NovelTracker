@@ -45,6 +45,7 @@ class NovelTest {
         n3.addGenre(3);
         n3.addGenre(7);
         n3.addGenre(8);
+        n3.addGenre(12);
         s = new ArrayList<>();
         s.add(Novel.genre4);
         s.add(Novel.genre1);
