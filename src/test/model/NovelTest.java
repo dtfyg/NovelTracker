@@ -45,7 +45,6 @@ class NovelTest {
         n3.addGenre(3);
         n3.addGenre(7);
         n3.addGenre(8);
-        n3.addGenre(12);
         s = new ArrayList<>();
         s.add(Novel.genre4);
         s.add(Novel.genre1);
@@ -54,6 +53,13 @@ class NovelTest {
         s.add(Novel.genre3);
         s.add(Novel.genre7);
         s.add(Novel.genre8);
+        assertEquals(s, n3.getGenre());
+    }
+
+    @Test
+    public void testAddOtherGenre(){
+        n3.addGenre(12);
+        s = new ArrayList<>();
         assertEquals(s, n3.getGenre());
     }
 
