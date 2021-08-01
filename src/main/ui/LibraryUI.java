@@ -1,19 +1,21 @@
 package ui;
 
+import model.Exceptions.BookNotFoundException;
+import model.Library;
 import model.Novel;
 
 import java.util.ArrayList;
 
 import java.util.Scanner;
 
-public class Library {
+public class LibraryUI {
 
     private Scanner scan;
-    private ArrayList<Novel> list;
+    private Library list;
 
 
     //Effects: runs the library application
-    public Library() {
+    public LibraryUI() {
         runLibrary();
     }
 
@@ -25,7 +27,7 @@ public class Library {
         while (running) {
             askQuestion();
             action = scan.nextLine();
-            if (action.equals("Q")) {
+            if (action.equals("Q") || action.equals("q")) {
                 running = false;
             } else {
                 doAction(action);
@@ -38,11 +40,13 @@ public class Library {
         String book;
         switch (action) {
             case "A":
+            case "a":
                 System.out.println("Please enter the name of a novel.");
                 book = scan.nextLine();
                 addBook(book);
                 break;
             case "L":
+            case "l":
                 displayList();
                 break;
             default:
@@ -58,37 +62,34 @@ public class Library {
         String bookAction;
         boolean contains = false;
         int position = 0;
-        for (Novel n : list) {
-            if (n.getName().equals(novel)) {
-                contains = true;
-                position--;
-            }
-            position++;
-        }
 
-        if (contains) {
+        Novel nu;
+
+        try {
+            nu = list.getNovel(novel);
             System.out.println("What would you like to do with the book");
             System.out.println("Press R to give it a rating, press G to add a genre, press N to rename the book,");
             System.out.println("Press 1 to get the rating, the genres and the name of the book.");
             System.out.println("Press 2 to remove a genre from the book.");
             bookAction = scan.nextLine();
-            useBook(bookAction, list.get(position));
-        } else {
-            System.out.println("Sorry, " + novel + " was not found.");
+            useBook(bookAction, nu);
+        } catch (BookNotFoundException b) {
+            System.err.println("Sorry, " + novel + " was not found.");
         }
+
     }
 
     //Modifies: This
     //Effects: Uses one of the actions listed depending on the user input
     private void useBook(String bookAction, Novel novel) {
         switch (bookAction) {
-            case "R":
+            case "R": case "r":
                 setRating(novel);
                 break;
-            case "G":
+            case "G": case "g":
                 giveGenre(novel);
                 break;
-            case "N":
+            case "N": case "n":
                 rename(novel);
                 break;
             case "1":
@@ -139,7 +140,7 @@ public class Library {
 
     //Effects: Asks question based on whether there is book in the list or not
     private void askQuestion() {
-        if (list.isEmpty()) {
+        if (list.empty()) {
             System.out.println("What would you like to do, press A to add a book, press Q to quit.");
         } else {
             System.out.println("To add another book, press A. To select a book,"
@@ -151,22 +152,22 @@ public class Library {
     //Effects Initializes variables
     private void init() {
         scan = new Scanner(System.in);
-        list = new ArrayList<>();
+        list = new Library();
     }
 
     //Modifies: This
     //Effects: Creates a new book of title and adds it to the list
     private void addBook(String title) {
         Novel n = new Novel(title);
-        list.add(n);
+        list.addNovel(n);
         System.out.println("Book added successfully!");
     }
 
     //Effects: Prints out the list of current books in the library
     public void displayList() {
         System.out.println("The current books in the library are:");
-        for (Novel n : list) {
-            System.out.print("[" + n.getName() + "]");
+        for (Novel n : list.getLib()) {
+            System.out.print(n);
             System.out.println(" ");
         }
     }

@@ -43,21 +43,29 @@ public class Novel {
     //Effects: Adds a genre to the novel
     public void addGenre(int genre) {
         switch (genre) {
-            case 1: this.genre.add(genre1);
+            case 1:
+                this.genre.add(genre1);
                 break;
-            case 2: this.genre.add(genre2);
+            case 2:
+                this.genre.add(genre2);
                 break;
-            case 3: this.genre.add(genre3);
+            case 3:
+                this.genre.add(genre3);
                 break;
-            case 4: this.genre.add(genre4);
+            case 4:
+                this.genre.add(genre4);
                 break;
-            case 5: this.genre.add(genre5);
+            case 5:
+                this.genre.add(genre5);
                 break;
-            case 6: this.genre.add(genre6);
+            case 6:
+                this.genre.add(genre6);
                 break;
-            case 7: this.genre.add(genre7);
+            case 7:
+                this.genre.add(genre7);
                 break;
-            case 8: this.genre.add(genre8);
+            case 8:
+                this.genre.add(genre8);
                 break;
             default:
                 break;
@@ -91,4 +99,10 @@ public class Novel {
     public String getName() {
         return this.name;
     }
+
+    //Effects: Returns the name of the Novel in the form [name]
+    public String toString() {
+        return "[" + this.name + "]";
+    }
+
 }

@@ -29,3 +29,6 @@ keep track of certain aspects of novels.
 - As a user, I want to be able to change a rating for a novel
 - As a user, I want to be able to add multiple genres to a novel
 - As a user, I want to be able to remove a genre from a novel
+
+- As a user, I want to be able to save my library of books and data to file
+- As a user, I want to be able to load my library that I have saved from file.

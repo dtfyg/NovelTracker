@@ -83,4 +83,9 @@ class NovelTest {
         assertEquals("Chicken Attack!", n3.getName());
     }
 
+    @Test
+    public void testToString(){
+        assertEquals("[Mother of Learning]", n2.toString());
+    }
+
 }
