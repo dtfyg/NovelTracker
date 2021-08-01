@@ -1,17 +1,21 @@
 package model;
 
-import model.Exceptions.BookNotFoundException;
+import model.exceptions.BookNotFoundException;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.Writable;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class Library {
+public class Library implements Writable {
 
+    private String name;
     private ArrayList<Novel> lib;
 
     //Effects: Creates a new library
-    public Library() {
+    public Library(String name) {
         this.lib = new ArrayList<>();
+        this.name = name;
     }
 
     //Effects: Adds a novel to the library
@@ -24,7 +28,7 @@ public class Library {
         boolean contains = false;
         int position = 0;
         for (Novel n : lib) {
-            if (n.getName().equals(name)) {
+            if (n.getName().equalsIgnoreCase(name)) {
                 contains = true;
                 position = lib.indexOf(n);
             }
@@ -47,4 +51,19 @@ public class Library {
         return lib.isEmpty();
     }
 
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("novels", novelsToJson());
+        return json;
+    }
+
+    private JSONArray novelsToJson() {
+        JSONArray jsonarray = new JSONArray();
+
+        for (Novel n : lib) {
+            jsonarray.put(n.toJson());
+        }
+        return jsonarray;
+    }
 }

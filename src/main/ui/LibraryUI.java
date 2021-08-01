@@ -1,11 +1,14 @@
 package ui;
 
-import model.Exceptions.BookNotFoundException;
+import model.exceptions.BookNotFoundException;
 import model.Library;
 import model.Novel;
+import org.json.JSONException;
+import persistence.JsonLoader;
+import persistence.JsonSaver;
 
-import java.util.ArrayList;
-
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class LibraryUI {
@@ -13,6 +16,20 @@ public class LibraryUI {
     private Scanner scan;
     private Library list;
 
+    private JsonLoader loader1;
+    private JsonSaver saver1;
+
+    private JsonLoader loader2;
+    private JsonSaver saver2;
+
+    private JsonLoader loader3;
+    private JsonSaver saver3;
+
+    private static final String JSON_DIR_1 = "./data/library.json";
+    private static final String JSON_DIR_2 = "./data/library2.json";
+    private static final String JSON_DIR_3 = "./data/library3.json";
+
+    private boolean loaded = false;
 
     //Effects: runs the library application
     public LibraryUI() {
@@ -27,7 +44,7 @@ public class LibraryUI {
         while (running) {
             askQuestion();
             action = scan.nextLine();
-            if (action.equals("Q") || action.equals("q")) {
+            if (action.equalsIgnoreCase("Q")) {
                 running = false;
             } else {
                 doAction(action);
@@ -38,16 +55,20 @@ public class LibraryUI {
     //Effects: Does the action inputted by the player
     private void doAction(String action) {
         String book;
-        switch (action) {
+        switch (action.toUpperCase()) {
             case "A":
-            case "a":
                 System.out.println("Please enter the name of a novel.");
                 book = scan.nextLine();
                 addBook(book);
                 break;
             case "L":
-            case "l":
                 displayList();
+                break;
+            case "SAVE":
+                chooseSaveSlot();
+                break;
+            case "LOAD":
+                chooseLoadSlot(false);
                 break;
             default:
                 checkForBook(action);
@@ -67,10 +88,9 @@ public class LibraryUI {
 
         try {
             nu = list.getNovel(novel);
-            System.out.println("What would you like to do with the book");
-            System.out.println("Press R to give it a rating, press G to add a genre, press N to rename the book,");
-            System.out.println("Press 1 to get the rating, the genres and the name of the book.");
-            System.out.println("Press 2 to remove a genre from the book.");
+            System.out.println("What would you like to do with the book?");
+            System.out.println("R --> add rating        G to --> add genre          N --> Rename novel,");
+            System.out.println("1 --> Get info about the novel          2 --> Remove a Genre");
             bookAction = scan.nextLine();
             useBook(bookAction, nu);
         } catch (BookNotFoundException b) {
@@ -82,20 +102,20 @@ public class LibraryUI {
     //Modifies: This
     //Effects: Uses one of the actions listed depending on the user input
     private void useBook(String bookAction, Novel novel) {
-        switch (bookAction) {
-            case "R": case "r":
+        switch (bookAction.toUpperCase()) {
+            case "R":
                 setRating(novel);
                 break;
-            case "G": case "g":
+            case "G":
                 giveGenre(novel);
                 break;
-            case "N": case "n":
+            case "N":
                 rename(novel);
                 break;
             case "1":
-                System.out.println("The name of the novel is " + novel.getName());
-                System.out.println("The rating of " + novel.getName() + " is " + novel.getRating());
-                System.out.println("The genres of " + novel.getName() + " are " + novel.getGenre());
+                System.out.println("Name: " + novel.getName());
+                System.out.println("Rating: " + novel.getRating());
+                System.out.println("Genres: " + novel.getGenre());
                 break;
             case "2":
                 removeGen(novel);
@@ -140,11 +160,15 @@ public class LibraryUI {
 
     //Effects: Asks question based on whether there is book in the list or not
     private void askQuestion() {
-        if (list.empty()) {
-            System.out.println("What would you like to do, press A to add a book, press Q to quit.");
+        if (list.empty() && !loaded) {
+            System.out.println("Welcome to the novel progress tracker, what would you like to do?");
+            System.out.println("A --> Add book");
+            System.out.println("Save --> Save           Load --> Load");
+            System.out.println("Q --> Quit");
         } else {
-            System.out.println("To add another book, press A. To select a book,"
-                    + " type its name. To view a list of your books, press L. To quit, press Q.");
+            System.out.println("A --> Add another book     (book name) --> Select a book      L --> List of Books");
+            System.out.println("Save --> Save           Load --> Load");
+            System.out.println("Q --> Quit");
         }
     }
 
@@ -152,8 +176,113 @@ public class LibraryUI {
     //Effects Initializes variables
     private void init() {
         scan = new Scanner(System.in);
-        list = new Library();
+        saver1 = new JsonSaver(JSON_DIR_1);
+        loader1 = new JsonLoader(JSON_DIR_1);
+        saver2 = new JsonSaver(JSON_DIR_2);
+        loader2 = new JsonLoader(JSON_DIR_2);
+        saver3 = new JsonSaver(JSON_DIR_3);
+        loader3 = new JsonLoader(JSON_DIR_3);
+        createLibraries();
     }
+
+    //Effects: Displays load slots as either empty or full
+    private void createLibraries() {
+        System.out.println("Please create or load a library!");
+        try {
+            System.out.println("File 1: " + loader1.loadNames());
+        } catch (JSONException n) {
+            System.out.println("File 1: Empty");
+        } catch (IOException i) {
+            System.err.println("Error in Loading file");
+        }
+        try {
+            System.out.println("File 2: " + loader2.loadNames());
+        } catch (JSONException n) {
+            System.out.println("File 2: Empty");
+        } catch (IOException i) {
+            System.err.println("Error in Loading file");
+        }
+        try {
+            System.out.println("File 3: " + loader3.loadNames());
+        } catch (JSONException n) {
+            System.out.println("File 3: Empty");
+        } catch (IOException i) {
+            System.err.println("Error in Loading file");
+        }
+        chooseLoadSlot(true);
+    }
+
+    //Effects: Allows user to choose a save slot
+    private void chooseSaveSlot() {
+        System.out.println("Type 1, 2 or 3 to choose a file");
+        int n = scan.nextInt();
+        scan.nextLine();
+        switch (n) {
+            case 1: saveLibrary(saver1);
+            break;
+            case 2: saveLibrary(saver2);
+            break;
+            case 3: saveLibrary(saver3);
+            break;
+            default:
+                chooseSaveSlot();
+                break;
+        }
+    }
+
+    //Effects: Allows user to choose a load slot
+    private void chooseLoadSlot(boolean create) {
+        System.out.println("Type 1, 2 or 3 to choose a file");
+        int n = scan.nextInt();
+        scan.nextLine();
+        String s;
+        if (create) {
+            System.out.println("C --> Create new        L --> Load file");
+            s = scan.nextLine();
+        } else {
+            s = "L";
+        }
+        switch (n) {
+            case 1: createLoad(s, 1);
+                break;
+            case 2: createLoad(s, 2);
+                break;
+            case 3: createLoad(s, 3);
+                break;
+            default:
+                System.err.println("Error slot not found");
+                createLibraries();
+                break;
+        }
+    }
+
+    //Effects: Allows user to choose between creating a slot or loading a slot
+    private void createLoad(String choice, int slot) {
+        switch (choice.toUpperCase()) {
+            case "C":
+                System.out.println("Please enter a name for the library");
+                String name = scan.nextLine();
+                list = new Library(name);
+                if (slot == 1) {
+                    saveLibrary(saver1);
+                } else if (slot == 2) {
+                    saveLibrary(saver2);
+                } else {
+                    saveLibrary(saver3);
+                }
+                break;
+            case "L":
+                if (slot == 1) {
+                    loadLibrary(loader1);
+                } else if (slot == 2) {
+                    loadLibrary(loader2);
+                } else {
+                    loadLibrary(loader3);
+                }
+                break;
+        }
+    }
+
 
     //Modifies: This
     //Effects: Creates a new book of title and adds it to the list
@@ -172,6 +301,7 @@ public class LibraryUI {
         }
     }
 
+    //Effects: Removes specified genre from given novel
     public void removeGen(Novel n) {
         String s;
         System.out.println("The current Genres of the book are:");
@@ -179,6 +309,32 @@ public class LibraryUI {
         System.out.println("Please type the name of the one you want to remove.");
         s = scan.nextLine();
         n.removeGenre(s);
+    }
+
+    //Effects: Saves the library of given save slot
+    public void saveLibrary(JsonSaver slot) {
+        try {
+            slot.open();
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found!");
+        }
+        slot.write(list);
+        slot.close();
+        System.out.println("Library saved to" + JSON_DIR_1);
+    }
+
+    //Effects: Loads the library of given save slot
+    public void loadLibrary(JsonLoader slot) {
+        try {
+            list = slot.read();
+            System.out.println("Library has been loaded.");
+        } catch (IOException e) {
+            System.err.println("Unable to read file.");
+        } catch (JSONException j) {
+            System.err.println("No file to load!");
+            chooseLoadSlot(true);
+        }
+        loaded = true;
     }
 
 }

@@ -1,8 +1,11 @@
 package model;
 
+import org.json.JSONObject;
+import persistence.Writable;
+
 import java.util.ArrayList;
 
-public class Novel {
+public class Novel implements Writable {
 
     public static final String genre1 = "Fantasy";
     public static final String genre2 = "Sci-Fi";
@@ -26,6 +29,13 @@ public class Novel {
         this.genre = new ArrayList<>();
     }
 
+    //Effects: Parameter to set all values after loading
+    public Novel(String name, int rating, ArrayList<String> genre) {
+        this.name = name;
+        this.rating = rating;
+        this.genre = genre;
+    }
+
     //Modifies: This
     //Effects: Adds a rating for the novel
     public void rateNovel(double rating) {
@@ -43,29 +53,21 @@ public class Novel {
     //Effects: Adds a genre to the novel
     public void addGenre(int genre) {
         switch (genre) {
-            case 1:
-                this.genre.add(genre1);
+            case 1: this.genre.add(genre1);
                 break;
-            case 2:
-                this.genre.add(genre2);
+            case 2: this.genre.add(genre2);
                 break;
-            case 3:
-                this.genre.add(genre3);
+            case 3: this.genre.add(genre3);
                 break;
-            case 4:
-                this.genre.add(genre4);
+            case 4: this.genre.add(genre4);
                 break;
-            case 5:
-                this.genre.add(genre5);
+            case 5: this.genre.add(genre5);
                 break;
-            case 6:
-                this.genre.add(genre6);
+            case 6: this.genre.add(genre6);
                 break;
-            case 7:
-                this.genre.add(genre7);
+            case 7: this.genre.add(genre7);
                 break;
-            case 8:
-                this.genre.add(genre8);
+            case 8: this.genre.add(genre8);
                 break;
             default:
                 break;
@@ -105,4 +107,12 @@ public class Novel {
         return "[" + this.name + "]";
     }
 
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("name", this.name);
+        json.put("rating", this.rating);
+        json.put("genres", this.genre);
+        return json;
+    }
 }

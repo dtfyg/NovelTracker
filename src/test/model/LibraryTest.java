@@ -1,6 +1,6 @@
 package model;
 
-import model.Exceptions.BookNotFoundException;
+import model.exceptions.BookNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ public class LibraryTest {
 
     @BeforeEach
     public void setup(){
-        lib = new Library();
+        lib = new Library("Beemo's Library");
         har = new Novel("Harry");
         beam = new Novel("beemo");
     }
