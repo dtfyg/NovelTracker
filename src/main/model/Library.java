@@ -51,6 +51,7 @@ public class Library implements Writable {
         return lib.isEmpty();
     }
 
+    //Effects: Converts the Library to JSon object
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("name", name);
@@ -58,6 +59,7 @@ public class Library implements Writable {
         return json;
     }
 
+    //Effects: Converts individual novels in the library to part of a jsonarray
     private JSONArray novelsToJson() {
         JSONArray jsonarray = new JSONArray();
 
@@ -65,5 +67,9 @@ public class Library implements Writable {
             jsonarray.put(n.toJson());
         }
         return jsonarray;
+    }
+
+    public String getName() {
+        return name;
     }
 }

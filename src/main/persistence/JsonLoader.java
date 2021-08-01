@@ -54,7 +54,7 @@ public class JsonLoader {
 
     private void addNovel(Library lib, JSONObject nextNovel) {
         String name = nextNovel.getString("name");
-        int rating = nextNovel.getInt("rating");
+        double rating = nextNovel.getDouble("rating");
         JSONArray jsonGenres = nextNovel.getJSONArray("genres");
 
         ArrayList<String> genres = new ArrayList<>();

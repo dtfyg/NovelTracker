@@ -25,12 +25,12 @@ public class Novel implements Writable {
     //Effects: Create a new novel with a name
     public Novel(String name) {
         this.name = name;
-        this.rating = -1;
+        this.rating = -1.0;
         this.genre = new ArrayList<>();
     }
 
     //Effects: Parameter to set all values after loading
-    public Novel(String name, int rating, ArrayList<String> genre) {
+    public Novel(String name, double rating, ArrayList<String> genre) {
         this.name = name;
         this.rating = rating;
         this.genre = genre;
@@ -107,6 +107,7 @@ public class Novel implements Writable {
         return "[" + this.name + "]";
     }
 
+    //Effects Converts a  novel to a json object
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
