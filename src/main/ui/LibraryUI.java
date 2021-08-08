@@ -1,140 +1,356 @@
 package ui;
 
-import model.exceptions.BookNotFoundException;
 import model.Library;
 import model.Novel;
+import model.exceptions.StatusNotCreatedException;
 import org.json.JSONException;
 import persistence.JsonLoader;
 import persistence.JsonSaver;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import javax.sound.sampled.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-public class LibraryUI {
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
+
+public class LibraryUI extends JPanel implements ActionListener {
 
     private Scanner scan;
     private Library list;
 
-    private JsonLoader loader1;
-    private JsonSaver saver1;
+    final JsonLoader loader1 = new JsonLoader(JSON_DIR_1);
+    final JsonSaver saver1 = new JsonSaver(JSON_DIR_1);
 
-    private JsonLoader loader2;
-    private JsonSaver saver2;
+    final JsonLoader loader2 = new JsonLoader(JSON_DIR_2);
+    final JsonSaver saver2 = new JsonSaver(JSON_DIR_2);
 
-    private JsonLoader loader3;
-    private JsonSaver saver3;
+    final JsonLoader loader3 = new JsonLoader(JSON_DIR_3);
+    final JsonSaver saver3 = new JsonSaver(JSON_DIR_3);
 
     private static final String JSON_DIR_1 = "./data/library.json";
     private static final String JSON_DIR_2 = "./data/library2.json";
     private static final String JSON_DIR_3 = "./data/library3.json";
 
+    final Color beige = new Color(236, 222, 193);
     private boolean loaded = false;
+    private int selected;
+    private int page = 1;
+    private int buttonId = -1;
 
-    //Effects: runs the library application
+    private boolean firstTime = true;
+
+    private JFrame frame;
+    private JToggleButton fileButton1;
+    private JToggleButton fileButton2;
+    private JToggleButton fileButton3;
+    private JButton newFile;
+    private JButton loadFile;
+    private JButton saveFile;
+    private JButton addButton;
+    private JButton selectButton;
+    private JButton leftButton;
+    private JButton rightButton;
+    private JTextField bookAdd;
+    JTextField statusField;
+    JButton editS;
+    JButton saveS;
+    JButton editR;
+    JButton saveR;
+    JTextField rate;
+    JLabel genre;
+    JLabel genreNum;
+    JComboBox genres;
+    JButton addGenre;
+    JButton removeGenre;
+    JTextField libName;
+
+    Image img = Toolkit.getDefaultToolkit().createImage("C:/Users/yiran/Downloads/books.jpeg");
+
+
+    GridBagConstraints gbc = new GridBagConstraints();
+    GridBagLayout lay = new GridBagLayout();
+
+    private ButtonGroup fileGroup = new ButtonGroup();
+    private ButtonGroup novelGroup = new ButtonGroup();
+
+    private Container contentPane;
+
+    private ArrayList<JToggleButton> buttonList = new ArrayList<>();
+    private ArrayList<JToggleButton> fillerList = new ArrayList<>();
+
+    JPanel textPane = new JPanel();
+
+
+    //Effects: runs the library application and creates the frames and buttons
     public LibraryUI() {
-        runLibrary();
-    }
-
-    //Effects: The main loop for the game, will keep running unless Q is entered
-    private void runLibrary() {
-        boolean running = true;
-        String action;
+        frame = new JFrame("Novel Tracker");
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        frame.setSize(new Dimension(800, 450));
+        frame.setResizable(false);
         init();
-        while (running) {
-            askQuestion();
-            action = scan.nextLine();
-            if (action.equalsIgnoreCase("Q")) {
-                running = false;
-            } else {
-                doAction(action);
-            }
-        }
-    }
-
-    //Effects: Does the action inputted by the player
-    private void doAction(String action) {
-        String book;
-        switch (action.toUpperCase()) {
-            case "A":
-                System.out.println("Please enter the name of a novel.");
-                book = scan.nextLine();
-                addBook(book);
-                break;
-            case "L":
-                displayList();
-                break;
-            case "SAVE":
-                chooseSaveSlot();
-                break;
-            case "LOAD":
-                chooseLoadSlot(false);
-                break;
-            default:
-                checkForBook(action);
-                break;
-        }
+        createStartScreen();
+        createFileButton();
+        frame.setVisible(true);
 
     }
 
-    //Effects: Checks the list to see if the entered book exists, if it does, it gives you more options to chooses from
-    //otherwise, it will give you an error message
-    private void checkForBook(String novel) {
-        String bookAction;
-        boolean contains = false;
-        int position = 0;
+    private void createStartScreen() {
+        gbc.gridheight = 5;
+        gbc.gridwidth = 5;
+        gbc.weighty = 2;
+        gbc.weightx = .5;
 
-        Novel nu;
+        contentPane = frame.getContentPane();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        contentPane.add(this);
 
-        try {
-            nu = list.getNovel(novel);
-            System.out.println("What would you like to do with the book?");
-            System.out.println("R --> add rating        G to --> add genre          N --> Rename novel,");
-            System.out.println("1 --> Get info about the novel          2 --> Remove a Genre");
-            bookAction = scan.nextLine();
-            useBook(bookAction, nu);
-        } catch (BookNotFoundException b) {
-            System.err.println("Sorry, " + novel + " was not found.");
-        }
+        this.setLayout(lay);
 
+        JLabel label = new JLabel("Select a File");
+        label.setFont(new Font("Ariel", Font.BOLD, 35));
+        addObjects(label, this, lay, gbc, 2, 0, 3, 1);
+
+        newFile = new JButton("New");
+        newFile.addActionListener(this);
+        addObjects(newFile, this, lay, gbc, 2, 5, 1, 1);
+
+        loadFile = new JButton("Load");
+        loadFile.addActionListener(this);
+        addObjects(loadFile, this, lay, gbc, 4, 5, 1, 1);
+
+        libName = new JTextField("Library Name");
+        libName.setPreferredSize(new Dimension(200, 25));
+        addObjects(libName, this, lay, gbc, 2, 5, 3, 1);
+
+        frame.setIconImage(img);
+
+        repaint();
+
+    }
+
+    //Effects: Adds an object to the container according to grid bag layouts
+    public void addObjects(Component component, Container yourcontainer, GridBagLayout layout, GridBagConstraints gbc,
+                           int gridx, int gridy, int gridwidth, int gridheight) {
+        this.gbc.gridx = gridx;
+        this.gbc.gridy = gridy;
+
+        this.gbc.gridwidth = gridwidth;
+        this.gbc.gridheight = gridheight;
+
+        layout.setConstraints(component, gbc);
+        yourcontainer.add(component);
     }
 
     //Modifies: This
     //Effects: Uses one of the actions listed depending on the user input
-    private void useBook(String bookAction, Novel novel) {
-        switch (bookAction.toUpperCase()) {
-            case "R":
-                setRating(novel);
-                break;
-            case "G":
-                giveGenre(novel);
-                break;
-            case "N":
-                rename(novel);
-                break;
-            case "1":
-                System.out.println("Name: " + novel.getName());
-                System.out.println("Rating: " + novel.getRating());
-                System.out.println("Genres: " + novel.getGenre());
-                break;
-            case "2":
-                removeGen(novel);
-                break;
-            default:
-                System.out.println("Your command was not recognized");
-                break;
+    private void useBook(Novel novel) {
+        this.removeAll();
+        revalidate();
+
+        ratingDetailsInit(novel);
+
+        statusDetailsInit(novel);
+
+        genreDetailsInit(novel);
+
+        JLabel field = new JLabel(novel.getName());
+        field.setPreferredSize(new Dimension(360, 60));
+        field.setFont(new Font("Ariel", Font.BOLD, 40));
+        addObjects(field, this, lay, gbc, 0, 0, 3, 1);
+
+        JButton back = new JButton("Back");
+        back.setPreferredSize(new Dimension(90, 25));
+        back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gbc.anchor = GridBagConstraints.CENTER;
+                firstTime = false;
+                page = 1;
+                askQuestionPanel();
+            }
+        });
+        addObjects(back, this, lay, gbc, 6, 5, 1, 1);
+
+        this.revalidate();
+        this.repaint();
+    }
+
+    //Effects: Initializes genre related buttons
+    private void genreDetailsInit(Novel novel) {
+        genre = new JLabel("Genre: ");
+        genre.setFont(new Font("Ariel", Font.BOLD, 20));
+        addObjects(genre, this, lay, gbc, 0, 2, 1, 1);
+
+        genreNum = new JLabel(novel.getGenre().toString());
+        genreNum.setFont(new Font("Ariel", Font.BOLD, 10));
+        gbc.anchor = GridBagConstraints.LINE_START;
+        addObjects(genreNum, this, lay, gbc, 1, 2, 1, 1);
+
+        String[] genresList = {"Fantasy", "Sci-Fi", "Romance", "Comedy",
+                "Adventure", "Yaoi/Yuri", "LitRPG", "Tragedy"};
+        genres = new JComboBox(genresList);
+        genres.setPreferredSize(new Dimension(100, 25));
+        addObjects(genres, this, lay, gbc, 2, 2, 1, 1);
+
+        genreDetailsImplement(novel);
+
+    }
+
+    //Effects: Helps genre details init to implement buttons
+    private void genreDetailsImplement(Novel novel) {
+        addGenre = new JButton("Add");
+        addGenre.setPreferredSize(new Dimension(65, 25));
+        addGenre.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                giveGenre(novel, genres.getSelectedIndex() + 1);
+                genreNum.setText(novel.getGenre().toString());
+                repaint();
+            }
+        });
+        addObjects(addGenre, this, lay, gbc, 3, 2, 1, 1);
+        removeGenre = new JButton("Remove");
+        removeGenre.setPreferredSize(new Dimension(80, 25));
+        removeGenre.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeGen(novel, (String) genres.getSelectedItem());
+                genreNum.setText(novel.getGenre().toString());
+                repaint();
+            }
+        });
+        addObjects(removeGenre, this, lay, gbc, 4, 2, 1, 1);
+    }
+
+    //Effects: Initiates the status related buttons
+    private void statusDetailsInit(Novel novel) {
+        try {
+            statusField = new JTextField(novel.getStatus());
+        } catch (StatusNotCreatedException e) {
+            statusField = new JTextField("N/A");
+        }
+        gbc.anchor = GridBagConstraints.LINE_START;
+        editS = new JButton("Edit");
+        editS.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                statusField.setEditable(true);
+                repaint();
+            }
+        });
+
+        saveS = new JButton("save");
+        gbc.anchor = GridBagConstraints.LINE_START;
+
+        statusDetailsImplement(novel);
+    }
+
+    //Effects: Helps status details init to initialize all the buttons
+    private void statusDetailsImplement(Novel novel) {
+        statusField.setPreferredSize(new Dimension(70, 20));
+        statusField.setEditable(false);
+        addObjects(statusField, this, lay, gbc, 1, 3, 1, 1);
+
+        editS.setPreferredSize(new Dimension(60, 25));
+        addObjects(editS, this, lay, gbc, 2, 3, 1, 1);
+
+        saveS.setPreferredSize(new Dimension(65, 25));
+        saveS.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (statusField.isEditable()) {
+                    updateStasis(novel, statusField.getText());
+                    statusField.setEditable(false);
+                    repaint();
+                }
+            }
+        });
+        addObjects(saveS, LibraryUI.this, lay, gbc, 3, 3, 1, 1);
+
+        JLabel status = new JLabel("Status: ");
+        gbc.anchor = GridBagConstraints.LINE_START;
+        status.setFont(new Font("Ariel", Font.BOLD, 20));
+        addObjects(status, this, lay, gbc, 0, 3, 1, 1);
+    }
+
+    //Effects: Initializes the rating related buttons and fields
+    private void ratingDetailsInit(Novel novel) {
+        rate = new JTextField(Double.toString(novel.getRating()));
+        rate.setPreferredSize(new Dimension(70, 20));
+        rate.setEditable(false);
+
+        editR = new JButton("Edit");
+        gbc.anchor = GridBagConstraints.LINE_START;
+        editR.setPreferredSize(new Dimension(65, 25));
+        editR.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                rate.setEditable(true);
+                revalidate();
+                repaint();
+            }
+        });
+        addObjects(editR, this, lay, gbc, 2, 1, 1, 1);
+
+        addObjects(rate, this, lay, gbc, 1, 1, 1, 1);
+        rateDetailsImplement(novel);
+    }
+
+    //Effects: Helps rating details Init initialize buttons
+    private void rateDetailsImplement(Novel novel) {
+
+        saveR = new JButton("save");
+        gbc.anchor = GridBagConstraints.LINE_START;
+        saveR.setPreferredSize(new Dimension(65, 25));
+        saveR.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (rate.isEditable()) {
+                    setRating(novel, rate.getText());
+                    rate.setEditable(false);
+                    rate.setText(Double.toString(novel.getRating()));
+                    repaint();
+                }
+            }
+        });
+        addObjects(saveR, LibraryUI.this, lay, gbc, 3, 1, 1, 1);
+
+        gbc.anchor = GridBagConstraints.LINE_START;
+
+        JLabel rating = new JLabel("Rating: ");
+        gbc.anchor = GridBagConstraints.LINE_START;
+        rating.setFont(new Font("Ariel", Font.BOLD, 20));
+        addObjects(rating, this, lay, gbc, 0, 1, 1, 1);
+    }
+
+    //Modifies: novel
+    //Effects: creates or updates the status of the chose novel
+    public void updateStasis(Novel novel, String s) {
+        try {
+            novel.updateStatus(s);
+            System.out.println("Status has been set to " + novel.getStatus());
+        } catch (StatusNotCreatedException e) {
+            novel.addStatus(s);
+            System.out.println("Status has been created.");
         }
     }
 
+
     //Modifies: This
     //Effects: Allows user to pick a rating for selected novel
-    public void setRating(Novel novel) {
-        double n;
-        System.out.println("Please enter a rating to give the novel from 1 to 5.");
-        n = scan.nextDouble();
-        novel.rateNovel(n);
-        System.out.println(novel.getName() + " has been rated " + n);
-        scan.nextLine();
+    public void setRating(Novel novel, String s) {
+        try {
+            double n = Double.parseDouble(s);
+            novel.rateNovel(n);
+        } catch (Exception e) {
+            System.err.println("Not a number!");
+        }
+
     }
 
     //Modifies: This
@@ -148,120 +364,196 @@ public class LibraryUI {
 
     //Modifies: This
     //Effects: Allows user to pick a genre for selected novel
-    public void giveGenre(Novel novel) {
-        int n;
-        System.out.println("Please choose genre: press 1 for fantasy, 2 for sci-fi, 3 for romance, ");
-        System.out.println("4 for comedy, 5 for adventure, 6 for yaoi/yuri, 7 for litrpg and 8 for tragedy");
-        n = scan.nextInt();
+    public void giveGenre(Novel novel, int n) {
         novel.addGenre(n);
-        System.out.println("The genre has been added");
-        scan.nextLine();
     }
 
-    //Effects: Asks question based on whether there is book in the list or not
-    private void askQuestion() {
-        if (list.empty() && !loaded) {
-            System.out.println("Welcome to the novel progress tracker, what would you like to do?");
-            System.out.println("A --> Add book");
-            System.out.println("Save --> Save           Load --> Load");
-            System.out.println("Q --> Quit");
-        } else {
-            System.out.println("A --> Add another book     (book name) --> Select a book      L --> List of Books");
-            System.out.println("Save --> Save           Load --> Load");
-            System.out.println("Q --> Quit");
+    //Effects: Initializes buttons for the main question screen
+    public void questionPanelInit() {
+        leftButton = new JButton("Previous");
+        leftButton.addActionListener(this);
+        addObjects(leftButton, this, lay, gbc, 2, 7, 1, 1);
+
+        rightButton = new JButton("Next");
+        rightButton.addActionListener(this);
+        addObjects(rightButton, this, lay, gbc, 4, 7, 1, 1);
+
+        addButton = new JButton("Add Novel");
+        addButton.setPreferredSize(new Dimension(100, 30));
+        addObjects(addButton, this, lay, gbc, 4, 8, 1, 1);
+
+        selectButton = new JButton("Select");
+        addObjects(selectButton, this, lay, gbc, 3, 7, 1, 1);
+
+        saveFile = new JButton("Save");
+        saveFile.setPreferredSize(new Dimension(100, 30));
+        addActionListener();
+        addObjects(saveFile, this, lay, gbc, 3, 9, 1, 1);
+
+        bookAdd = new JTextField("Enter Book name here");
+        bookAdd.setPreferredSize(new Dimension(400, 25));
+        addObjects(bookAdd, this, lay, gbc, 2, 8, 3, 1);
+    }
+
+    //Effects: Creates all the buttons and shows 6 books out of the list at a time along with buttons to add
+    //select or save
+    public void askQuestionPanel() {
+        this.removeAll();
+        this.revalidate();
+        this.setBackground(beige);
+
+        questionPanelInit();
+
+        for (int i = 0; i < list.getLib().size(); i++) {
+            if (firstTime) {
+                JToggleButton j;
+                j = new JToggleButton(list.getLib().get(i).getName());
+                novelGroup.add(j);
+                buttonList.add(j);
+                j.addActionListener(this);
+            }
+            if (this.getComponentCount() < 12) {
+                buttonList.get(i).setPreferredSize(new Dimension(400, 25));
+                addObjects(buttonList.get(i), this, lay, gbc, 2, i, 3, 1);
+            }
+
         }
+
+        this.repaint();
+
+    }
+
+    //Effects: Implements some actionlistners for buttons
+    private void addActionListener() {
+        selectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (buttonId != -1) {
+                    useBook(list.getLib().get(buttonId));
+                }
+            }
+        });
+        saveFile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (selected == 1) {
+                    saveLibrary(saver1);
+                } else if (selected == 2) {
+                    saveLibrary(saver2);
+                } else {
+                    saveLibrary(saver3);
+                }
+            }
+        });
+        addButtonListener();
+    }
+
+    //Effects: Helps addActionListener implement actionListeners
+    public void addButtonListener() {
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addBook(bookAdd.getText());
+                JToggleButton j = new JToggleButton(bookAdd.getText());
+                novelGroup.add(j);
+                buttonList.add(j);
+                j.addActionListener(LibraryUI.this);
+                if (getComponentCount() < 12) {
+                    j.setPreferredSize(new Dimension(400, 25));
+                    addObjects(j, LibraryUI.this, lay, gbc, 2, getComponentCount() - 6, 3, 1);
+                }
+                firstTime = false;
+                page = 1;
+                askQuestionPanel();
+            }
+        });
     }
 
     //Modifies: This
     //Effects Initializes variables
     private void init() {
         scan = new Scanner(System.in);
-        saver1 = new JsonSaver(JSON_DIR_1);
-        loader1 = new JsonLoader(JSON_DIR_1);
-        saver2 = new JsonSaver(JSON_DIR_2);
-        loader2 = new JsonLoader(JSON_DIR_2);
-        saver3 = new JsonSaver(JSON_DIR_3);
-        loader3 = new JsonLoader(JSON_DIR_3);
-        createLibraries();
+        for (int i = 0; i < 5; i++) {
+            JToggleButton f = new JToggleButton();
+            f.setPreferredSize(new Dimension(400, 25));
+            fillerList.add(f);
+        }
+
+
     }
 
-    //Effects: Displays load slots as either empty or full
-    private void createLibraries() {
-        System.out.println("Please create or load a library!");
+    //Effects: Creates the first save/load file
+    private void createFileButton() {
         try {
-            System.out.println("File 1: " + loader1.loadNames());
-        } catch (JSONException n) {
-            System.out.println("File 1: Empty");
-        } catch (IOException i) {
-            System.err.println("Error in Loading file");
+            fileButton1 = new JToggleButton("File 1: " + loader1.loadNames());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException j) {
+            fileButton1 = new JToggleButton("File 1: Empty");
         }
-        try {
-            System.out.println("File 2: " + loader2.loadNames());
-        } catch (JSONException n) {
-            System.out.println("File 2: Empty");
-        } catch (IOException i) {
-            System.err.println("Error in Loading file");
-        }
-        try {
-            System.out.println("File 3: " + loader3.loadNames());
-        } catch (JSONException n) {
-            System.out.println("File 3: Empty");
-        } catch (IOException i) {
-            System.err.println("Error in Loading file");
-        }
-        chooseLoadSlot(true);
+        fileGroup.add(fileButton1);
+        fileButton1.setPreferredSize(new Dimension(200, 40));
+        addObjects(fileButton1, this, lay, gbc, 2, 1, 3, 1);
+        fileButton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selected = 1;
+                playSound();
+            }
+        });
+        createFileButton2();
+        createFileButton3();
     }
 
-    //Effects: Allows user to choose a save slot
-    private void chooseSaveSlot() {
-        System.out.println("Type 1, 2 or 3 to choose a file");
-        int n = scan.nextInt();
-        scan.nextLine();
-        switch (n) {
-            case 1: saveLibrary(saver1);
-            break;
-            case 2: saveLibrary(saver2);
-            break;
-            case 3: saveLibrary(saver3);
-            break;
-            default:
-                chooseSaveSlot();
-                break;
+    //Effects: Creates the second save/load file
+    private void createFileButton2() {
+        try {
+            fileButton2 = new JToggleButton("File 2: " + loader2.loadNames());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException j) {
+            fileButton2 = new JToggleButton("File 2: Empty");
         }
+        fileGroup.add(fileButton2);
+        fileButton2.setPreferredSize(new Dimension(200, 40));
+        addObjects(fileButton2, this, lay, gbc, 2, 3, 3, 1);
+        fileButton2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selected = 2;
+                playSound();
+            }
+        });
     }
 
-    //Effects: Allows user to choose a load slot
-    private void chooseLoadSlot(boolean create) {
-        System.out.println("Type 1, 2 or 3 to choose a file");
-        int n = scan.nextInt();
-        scan.nextLine();
-        String s;
-        if (create) {
-            System.out.println("C --> Create new        L --> Load file");
-            s = scan.nextLine();
-        } else {
-            s = "L";
+    //Effects: Creates the third save/load file
+    private void createFileButton3() {
+        try {
+            fileButton3 = new JToggleButton("File 3: " + loader3.loadNames());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException j) {
+            fileButton3 = new JToggleButton("File 3: Empty");
         }
-        switch (n) {
-            case 1: createLoad(s, 1);
-                break;
-            case 2: createLoad(s, 2);
-                break;
-            case 3: createLoad(s, 3);
-                break;
-            default:
-                System.err.println("Error slot not found");
-                createLibraries();
-                break;
-        }
+        fileGroup.add(fileButton3);
+        fileButton3.setPreferredSize(new Dimension(200, 40));
+        addObjects(fileButton3, this, lay, gbc, 2, 4, 3, 1);
+        fileButton3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selected = 3;
+                playSound();
+            }
+        });
+
     }
 
     //Effects: Allows user to choose between creating a slot or loading a slot
     private void createLoad(String choice, int slot) {
         switch (choice.toUpperCase()) {
             case "C":
-                System.out.println("Please enter a name for the library");
-                String name = scan.nextLine();
+
+                String name = libName.getText();
                 list = new Library(name);
                 if (slot == 1) {
                     saveLibrary(saver1);
@@ -283,7 +575,6 @@ public class LibraryUI {
         }
     }
 
-
     //Modifies: This
     //Effects: Creates a new book of title and adds it to the list
     private void addBook(String title) {
@@ -302,12 +593,7 @@ public class LibraryUI {
     }
 
     //Effects: Removes specified genre from given novel
-    public void removeGen(Novel n) {
-        String s;
-        System.out.println("The current Genres of the book are:");
-        System.out.println(n.getGenre());
-        System.out.println("Please type the name of the one you want to remove.");
-        s = scan.nextLine();
+    public void removeGen(Novel n, String s) {
         n.removeGenre(s);
     }
 
@@ -328,13 +614,86 @@ public class LibraryUI {
         try {
             list = slot.read();
             System.out.println("Library has been loaded.");
+            askQuestionPanel();
         } catch (IOException e) {
             System.err.println("Unable to read file.");
         } catch (JSONException j) {
             System.err.println("No file to load!");
-            chooseLoadSlot(true);
         }
         loaded = true;
+    }
+
+    //Effects: Action event for assortment of buttons
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == newFile && selected != 0) {
+            createLoad("C", selected);
+            askQuestionPanel();
+        }
+        if (e.getSource() == loadFile && selected != 0) {
+            createLoad("L", selected);
+        }
+        if (e.getSource() == leftButton && page > 1) {
+            page--;
+            updateList(true, false);
+        }
+        if (e.getSource() == rightButton && (page * 6) < buttonList.size()) {
+            page++;
+            updateList(false, false);
+        }
+        for (int i = 0; i < buttonList.size(); i++) {
+            if (e.getSource() == buttonList.get(i)) {
+                buttonId = i;
+                System.out.println(buttonId);
+                playSound();
+            }
+        }
+
+    }
+
+    private void updateList(boolean left, boolean notLast) {
+        if (buttonList.size() - ((page - 1) * 6) > 6) {
+            notLast = true;
+        }
+        for (int i = 0; i < 6; i++) {
+            this.remove(this.getComponentCount() - 1);
+        }
+        if (left | notLast) {
+            for (int i = 0; i < 6; i++) {
+                buttonList.get(i + ((page - 1) * 6)).setPreferredSize(new Dimension(400, 25));
+                addObjects(buttonList.get(i + ((page - 1) * 6)), this, lay, gbc, 2, i, 3, 1);
+            }
+        } else {
+            for (int i = 0; i < (buttonList.size() - ((page - 1) * 6)); i++) {
+                buttonList.get(i + ((page - 1) * 6)).setPreferredSize(new Dimension(400, 25));
+                addObjects(buttonList.get(i + ((page - 1) * 6)), this, lay, gbc, 2, i, 3, 1);
+            }
+            for (int i = 0; i < (6 - (buttonList.size() - ((page - 1) * 6))); i++) {
+                addObjects(fillerList.get(i), this, lay, gbc, 2,
+                        i + (buttonList.size() - ((page - 1) * 6)), 3, 1);
+            }
+        }
+        this.revalidate();
+        this.repaint();
+    }
+
+    //Effects: Paints the background image
+    @Override
+    public void paintComponent(Graphics g) {
+        g.drawImage(img, 0, 0, null);
+    }
+
+    //Effects: Plays button Sound
+    private void playSound() {
+        try {
+            AudioInputStream sound = AudioSystem.getAudioInputStream(new File(
+                    "C:/Users/yiran/Downloads/button-16.wav"));
+            Clip clip = AudioSystem.getClip();
+            clip.open(sound);
+            clip.start();
+        } catch (Exception e) {
+            System.err.println("Sound error");
+        }
     }
 
 }

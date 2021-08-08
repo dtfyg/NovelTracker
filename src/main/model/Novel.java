@@ -1,5 +1,6 @@
 package model;
 
+import model.exceptions.StatusNotCreatedException;
 import org.json.JSONObject;
 import persistence.Writable;
 
@@ -16,11 +17,15 @@ public class Novel implements Writable {
     public static final String genre7 = "LitRPG";
     public static final String genre8 = "Tragedy";
 
+    private String[] genresList;
+
     private String name;
 
     private ArrayList<String> genre;
 
     private double rating;
+
+    Status status;
 
     //Effects: Create a new novel with a name
     public Novel(String name) {
@@ -116,4 +121,42 @@ public class Novel implements Writable {
         json.put("genres", this.genre);
         return json;
     }
+
+    public void addStatus(String status) {
+        try {
+            if (status.equalsIgnoreCase("completed")) {
+                this.status = new Status(-1, true);
+            } else {
+                this.status = new Status(Integer.parseInt(status), false);
+            }
+        } catch (NumberFormatException n) {
+            System.err.println("Input is invalid!");
+        }
+    }
+
+    public void updateStatus(String status) throws StatusNotCreatedException {
+        if (this.status == null) {
+            throw new StatusNotCreatedException();
+        } else {
+            try {
+                if (status.equalsIgnoreCase("completed")) {
+                    this.status.setCompleted(true);
+                } else {
+                    this.status.setChapter(Integer.parseInt(status));
+                }
+            } catch (NumberFormatException n) {
+                System.err.println("Input is invalid!");
+            }
+        }
+    }
+
+    //Effects: Returns the completion Status of the novel
+    public String getStatus() throws StatusNotCreatedException {
+        if (status == null) {
+            throw new StatusNotCreatedException();
+        } else {
+            return status.toString();
+        }
+    }
+
 }
