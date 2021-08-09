@@ -83,8 +83,6 @@ public class LibraryUI extends JPanel implements ActionListener {
     private ArrayList<JToggleButton> buttonList = new ArrayList<>();
     private ArrayList<JToggleButton> fillerList = new ArrayList<>();
 
-    JPanel textPane = new JPanel();
-
 
     //Effects: runs the library application and creates the frames and buttons
     public LibraryUI() {
@@ -229,11 +227,7 @@ public class LibraryUI extends JPanel implements ActionListener {
 
     //Effects: Initiates the status related buttons
     private void statusDetailsInit(Novel novel) {
-        try {
-            statusField = new JTextField(novel.getStatus());
-        } catch (StatusNotCreatedException e) {
-            statusField = new JTextField("N/A");
-        }
+        statusField = new JTextField(novel.getStatus());
         gbc.anchor = GridBagConstraints.LINE_START;
         editS = new JButton("Edit");
         editS.addActionListener(new ActionListener() {
@@ -400,20 +394,23 @@ public class LibraryUI extends JPanel implements ActionListener {
     public void askQuestionPanel() {
         this.removeAll();
         this.revalidate();
-        this.setBackground(beige);
 
         questionPanelInit();
 
         for (int i = 0; i < list.getLib().size(); i++) {
             if (firstTime) {
                 JToggleButton j;
-                j = new JToggleButton(list.getLib().get(i).getName());
+                j = new JToggleButton(list.getLib().get(i).getName() + "    Rating: "
+                        + list.getLib().get(i).getRating() + "     Status: " + list.getLib().get(i).getStatus());
                 novelGroup.add(j);
                 buttonList.add(j);
+                buttonList.get(i).setPreferredSize(new Dimension(400, 25));
                 j.addActionListener(this);
             }
             if (this.getComponentCount() < 12) {
-                buttonList.get(i).setPreferredSize(new Dimension(400, 25));
+
+                buttonList.get(i).setText(list.getLib().get(i).getName() + "    Rating: "
+                        + list.getLib().get(i).getRating() + "     Status: " + list.getLib().get(i).getStatus());
                 addObjects(buttonList.get(i), this, lay, gbc, 2, i, 3, 1);
             }
 
@@ -454,7 +451,7 @@ public class LibraryUI extends JPanel implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addBook(bookAdd.getText());
-                JToggleButton j = new JToggleButton(bookAdd.getText());
+                JToggleButton j = new JToggleButton(bookAdd.getText() + "   Rating: N/A   Status: N/A");
                 novelGroup.add(j);
                 buttonList.add(j);
                 j.addActionListener(LibraryUI.this);
@@ -583,14 +580,6 @@ public class LibraryUI extends JPanel implements ActionListener {
         System.out.println("Book added successfully!");
     }
 
-    //Effects: Prints out the list of current books in the library
-    public void displayList() {
-        System.out.println("The current books in the library are:");
-        for (Novel n : list.getLib()) {
-            System.out.print(n);
-            System.out.println(" ");
-        }
-    }
 
     //Effects: Removes specified genre from given novel
     public void removeGen(Novel n, String s) {
@@ -635,11 +624,11 @@ public class LibraryUI extends JPanel implements ActionListener {
         }
         if (e.getSource() == leftButton && page > 1) {
             page--;
-            updateList(true, false);
+            prepListUpdate(true);
         }
         if (e.getSource() == rightButton && (page * 6) < buttonList.size()) {
             page++;
-            updateList(false, false);
+            prepListUpdate(false);
         }
         for (int i = 0; i < buttonList.size(); i++) {
             if (e.getSource() == buttonList.get(i)) {
@@ -652,20 +641,21 @@ public class LibraryUI extends JPanel implements ActionListener {
     }
 
     private void updateList(boolean left, boolean notLast) {
-        if (buttonList.size() - ((page - 1) * 6) > 6) {
-            notLast = true;
-        }
-        for (int i = 0; i < 6; i++) {
-            this.remove(this.getComponentCount() - 1);
-        }
+
         if (left | notLast) {
             for (int i = 0; i < 6; i++) {
                 buttonList.get(i + ((page - 1) * 6)).setPreferredSize(new Dimension(400, 25));
+                buttonList.get(i + ((page - 1) * 6)).setText(list.getLib().get(i + ((page - 1) * 6)).getName()
+                        + "    Rating: " + list.getLib().get(i + ((page - 1) * 6)).getRating()
+                        + "     Status: " + list.getLib().get(i + ((page - 1) * 6)).getStatus());
                 addObjects(buttonList.get(i + ((page - 1) * 6)), this, lay, gbc, 2, i, 3, 1);
             }
         } else {
             for (int i = 0; i < (buttonList.size() - ((page - 1) * 6)); i++) {
                 buttonList.get(i + ((page - 1) * 6)).setPreferredSize(new Dimension(400, 25));
+                buttonList.get(i + ((page - 1) * 6)).setText(list.getLib().get(i + ((page - 1) * 6)).getName()
+                        + "    Rating: " + list.getLib().get(i + ((page - 1) * 6)).getRating() + "     Status: "
+                        + list.getLib().get(i + ((page - 1) * 6)).getStatus());
                 addObjects(buttonList.get(i + ((page - 1) * 6)), this, lay, gbc, 2, i, 3, 1);
             }
             for (int i = 0; i < (6 - (buttonList.size() - ((page - 1) * 6))); i++) {
@@ -675,6 +665,18 @@ public class LibraryUI extends JPanel implements ActionListener {
         }
         this.revalidate();
         this.repaint();
+    }
+
+    //Effects: Removes neccesary components and prepares variables for updateList
+    public void prepListUpdate(boolean left) {
+        boolean notLast = false;
+        if (buttonList.size() - ((page - 1) * 6) > 6) {
+            notLast = true;
+        }
+        for (int i = 0; i < 6; i++) {
+            this.remove(this.getComponentCount() - 1);
+        }
+        updateList(left, notLast);
     }
 
     //Effects: Paints the background image

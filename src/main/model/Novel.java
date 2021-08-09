@@ -151,9 +151,9 @@ public class Novel implements Writable {
     }
 
     //Effects: Returns the completion Status of the novel
-    public String getStatus() throws StatusNotCreatedException {
+    public String getStatus() {
         if (status == null) {
-            throw new StatusNotCreatedException();
+            return "N/A";
         } else {
             return status.toString();
         }

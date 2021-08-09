@@ -91,12 +91,7 @@ class NovelTest {
 
     @Test
     void getStatus() {
-        try {
-            n1.getStatus();
-            fail("Exception not thrown");
-        } catch (StatusNotCreatedException e) {
-
-        }
+           assertEquals("N/A",  n1.getStatus());
     }
 
     @Test
@@ -107,21 +102,14 @@ class NovelTest {
     @Test
     void setStatusC() {
         n1.addStatus("Completed");
-        try {
-            assertEquals("Completed", n1.getStatus());
-        } catch (StatusNotCreatedException e) {
-            fail("Caught Status not found exception");
-        }
+
+        assertEquals("Completed", n1.getStatus());
     }
 
     @Test
     void setStatusChap() {
         n1.addStatus("140");
-        try {
             assertEquals("c140", n1.getStatus());
-        } catch (StatusNotCreatedException e) {
-            fail("Exception Caught");
-        }
     }
 
     @Test
