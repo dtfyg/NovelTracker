@@ -206,7 +206,7 @@ public class LibraryUI extends JPanel implements ActionListener {
         addGenre.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                giveGenre(novel, genres.getSelectedIndex() + 1);
+                novel.addGenre(genres.getSelectedIndex() + 1);
                 genreNum.setText(novel.getGenre().toString());
                 repaint();
             }
@@ -345,21 +345,6 @@ public class LibraryUI extends JPanel implements ActionListener {
             System.err.println("Not a number!");
         }
 
-    }
-
-    //Modifies: This
-    //Effects: Allows user to pick a new name for selected novel
-    public void rename(Novel novel) {
-        System.out.println("Please enter a new name");
-        String name = scan.nextLine();
-        novel.changeName(name);
-        System.out.println("Name has been changed to " + name);
-    }
-
-    //Modifies: This
-    //Effects: Allows user to pick a genre for selected novel
-    public void giveGenre(Novel novel, int n) {
-        novel.addGenre(n);
     }
 
     //Effects: Initializes buttons for the main question screen
@@ -633,7 +618,6 @@ public class LibraryUI extends JPanel implements ActionListener {
         for (int i = 0; i < buttonList.size(); i++) {
             if (e.getSource() == buttonList.get(i)) {
                 buttonId = i;
-                System.out.println(buttonId);
                 playSound();
             }
         }

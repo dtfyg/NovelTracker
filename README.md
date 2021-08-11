@@ -34,3 +34,18 @@ keep track of certain aspects of novels.
 ### Phase 2 Stories ###
 - As a user, I want to be able to save my libraries of books and data to multiple files
 - As a user, I want to be able to load my library that I have saved from multiple files.
+
+### Phase 3 Stories ###
+- As a user, I want to have a GUI with all the implemented functions
+
+### Phase 4 Stories ###
+- Library class in model has been modified to be robust and has been tested
+
+### Phase 4: Task 3 ###
+If I had more time to work on this project, the main thing I would do is to refactor the LibraryUI class. 
+This class is the one class the manages all the GUI related aspects at the moment, and I would like to split it 
+up into several classes to manage the functionality. Because I have multiple "screens" that the application can
+enter, I would create classes dedicated to the functionality of that one screen.
+One example would be to refactor the beginning load/create new screen into 
+its own class that focuses on creating the layout, buttons, and functionality of the methods for it. This way,
+the UI section would be a lot more organized and easy to read.

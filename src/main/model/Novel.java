@@ -17,8 +17,6 @@ public class Novel implements Writable {
     public static final String genre7 = "LitRPG";
     public static final String genre8 = "Tragedy";
 
-    private String[] genresList;
-
     private String name;
 
     private ArrayList<String> genre;

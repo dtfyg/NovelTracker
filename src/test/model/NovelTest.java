@@ -129,7 +129,7 @@ class NovelTest {
             n1.updateStatus("100");
             fail("StatusNotCreated exception not found");
         } catch (StatusNotCreatedException e) {
-
+            //Expected outcome
         }
     }
 

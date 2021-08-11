@@ -40,7 +40,7 @@ public class LibraryTest {
             lib.getNovel("Beemo");
             fail("BookNotFoundException expected");
         } catch (BookNotFoundException e) {
-
+            //Expected outcome
         }
     }
     @Test
