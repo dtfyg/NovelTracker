@@ -1,0 +1,38 @@
+{
+    "name": "Current Library",
+    "novels": [
+        {
+            "genres": [
+                "Yaoi/Yuri",
+                "Romance"
+            ],
+            "name": "Epiphanies of Rebirth",
+            "rating": 3.8,
+            "status": "c41"
+        },
+        {
+            "genres": ["Fantasy"],
+            "name": "The Baby Raising a Devil",
+            "rating": 2.8,
+            "status": "c46"
+        },
+        {
+            "genres": [
+                "Fantasy",
+                "LitRPG"
+            ],
+            "name": "The Demon Prince goes to the Academy",
+            "rating": 3.5,
+            "status": "c21"
+        },
+        {
+            "genres": [
+                "Fantasy",
+                "Yaoi/Yuri"
+            ],
+            "name": "Are you going to Kill me?",
+            "rating": 3,
+            "status": "c18"
+        }
+    ]
+}

@@ -1,0 +1,74 @@
+{
+    "name": "Test Library",
+    "novels": [
+        {
+            "genres": [
+                "Fantasy",
+                "Yaoi/Yuri",
+                "Adventure"
+            ],
+            "name": "book 1",
+            "rating": 3,
+            "status": "N/A"
+        },
+        {
+            "genres": [
+                "Comedy",
+                "Romance",
+                "Tragedy",
+                "Fantasy"
+            ],
+            "name": "book 2",
+            "rating": 2.5,
+            "status": "N/A"
+        },
+        {
+            "genres": ["Sci-Fi"],
+            "name": "book 3",
+            "rating": 4,
+            "status": "N/A"
+        },
+        {
+            "genres": ["Fantasy"],
+            "name": "book 4",
+            "rating": 3,
+            "status": "N/A"
+        },
+        {
+            "genres": ["Fantasy"],
+            "name": "book 5",
+            "rating": 5,
+            "status": "N/A"
+        },
+        {
+            "genres": ["Fantasy"],
+            "name": "book 6",
+            "rating": 3,
+            "status": "N/A"
+        },
+        {
+            "genres": ["Fantasy"],
+            "name": "book 7",
+            "rating": 2.7,
+            "status": "N/A"
+        },
+        {
+            "genres": ["Fantasy"],
+            "name": "book 8",
+            "rating": 3,
+            "status": "N/A"
+        },
+        {
+            "genres": ["Fantasy"],
+            "name": "book 9",
+            "rating": 3,
+            "status": "N/A"
+        },
+        {
+            "genres": ["Fantasy"],
+            "name": "book 10",
+            "rating": 2.6,
+            "status": "N/A"
+        }
+    ]
+}

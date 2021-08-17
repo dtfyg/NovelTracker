@@ -1,0 +1,15 @@
+{
+    "name": "The Library",
+    "novels": [
+        {
+            "genres": [],
+            "name": "Lord of the rings",
+            "rating": -1
+        },
+        {
+            "genres": [],
+            "name": "Harry potter",
+            "rating": 4.6
+        }
+    ]
+}
