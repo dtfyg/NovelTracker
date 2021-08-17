@@ -33,10 +33,18 @@ public class Novel implements Writable {
     }
 
     //Effects: Parameter to set all values after loading
-    public Novel(String name, double rating, ArrayList<String> genre) {
+    public Novel(String name, double rating, ArrayList<String> genre, String status) {
         this.name = name;
         this.rating = rating;
         this.genre = genre;
+        if (status.equalsIgnoreCase("completed")) {
+            this.status = new Status(-1, true);
+        } else if (status.equalsIgnoreCase("N/A")) {
+            this.status = null;
+        } else {
+            this.status = new Status(Integer.parseInt(status.substring(1, status.length())), false);
+        }
+
     }
 
     //Modifies: This
@@ -56,21 +64,29 @@ public class Novel implements Writable {
     //Effects: Adds a genre to the novel
     public void addGenre(int genre) {
         switch (genre) {
-            case 1: this.genre.add(genre1);
+            case 1:
+                this.genre.add(genre1);
                 break;
-            case 2: this.genre.add(genre2);
+            case 2:
+                this.genre.add(genre2);
                 break;
-            case 3: this.genre.add(genre3);
+            case 3:
+                this.genre.add(genre3);
                 break;
-            case 4: this.genre.add(genre4);
+            case 4:
+                this.genre.add(genre4);
                 break;
-            case 5: this.genre.add(genre5);
+            case 5:
+                this.genre.add(genre5);
                 break;
-            case 6: this.genre.add(genre6);
+            case 6:
+                this.genre.add(genre6);
                 break;
-            case 7: this.genre.add(genre7);
+            case 7:
+                this.genre.add(genre7);
                 break;
-            case 8: this.genre.add(genre8);
+            case 8:
+                this.genre.add(genre8);
                 break;
             default:
                 break;
@@ -117,6 +133,7 @@ public class Novel implements Writable {
         json.put("name", this.name);
         json.put("rating", this.rating);
         json.put("genres", this.genre);
+        json.put("status", this.getStatus());
         return json;
     }
 

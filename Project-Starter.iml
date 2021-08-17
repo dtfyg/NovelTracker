@@ -30,5 +30,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="json-20200518" level="project" />
+    <orderEntry type="library" name="miglayout-core-4.3-20121116.151612-3-javadoc" level="project" />
+    <orderEntry type="library" name="MigLayout" level="project" />
   </component>
 </module>
