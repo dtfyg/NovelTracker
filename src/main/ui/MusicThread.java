@@ -31,6 +31,7 @@ public class MusicThread implements Runnable {
                 }
             });
             System.out.println("Current Song: " + playlist.get(n - 1));
+            System.out.println("-------------------------------------");
             clipC.open(sound);
             clipC.start();
             syncLatch.await();
