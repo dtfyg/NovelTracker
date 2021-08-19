@@ -15,6 +15,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
@@ -64,20 +66,25 @@ public class LibraryUI extends JPanel implements ActionListener {
     private JLabel genre;
     private JLabel genreNum;
     private JComboBox genres;
+    private boolean pressed = false;
     JButton addGenre;
     JButton removeGenre;
     JTextField libName;
     JLabel minRating;
     JTextField minRatingField;
-
+    MusicThread thread = new MusicThread();
+    Thread thready = new Thread(thread);
 
     private boolean searching = false;
     private String searchEntry;
     private JButton resetButton;
+    boolean firstT = true;
 
     private Image img = Toolkit.getDefaultToolkit().createImage("./data/books.jpeg");
     private Image img2 = Toolkit.getDefaultToolkit().getImage("./data/backgroundImage.png");
+    private Image play = Toolkit.getDefaultToolkit().getImage("./data/playButton.png");
 
+    private Clip clipC;
 
     protected ButtonGroup fileGroup = new ButtonGroup();
     protected ButtonGroup novelGroup = new ButtonGroup();
@@ -349,7 +356,7 @@ public class LibraryUI extends JPanel implements ActionListener {
         this.add(saveFile, "align center");
 
         createFilterButton();
-
+        celesteButton();
     }
 
     public void createRightButton() {
@@ -393,7 +400,7 @@ public class LibraryUI extends JPanel implements ActionListener {
             filterScreen();
 
         });
-        this.add(filter);
+        this.add(filter, "split 2");
     }
 
     public void filterScreenInit() {
@@ -657,7 +664,6 @@ public class LibraryUI extends JPanel implements ActionListener {
             fillerList.add(f);
         }
 
-
     }
 
     //Effects: Creates the first save/load file
@@ -867,6 +873,41 @@ public class LibraryUI extends JPanel implements ActionListener {
             clip.start();
         } catch (Exception e) {
             System.err.println("Sound error");
+        }
+    }
+
+    public void celesteButton() {
+
+        JToggleButton celeste = new JToggleButton("Music");
+        if (pressed) {
+            celeste.setSelected(true);
+        }
+        celeste.setPreferredSize(new Dimension(100, 20));
+        celeste.addActionListener(e -> {
+            playSoundtrack(pressed);
+
+            if (pressed) {
+                pressed = false;
+            } else {
+                pressed = true;
+            }
+        });
+        add(celeste);
+    }
+
+    private void playSoundtrack(boolean stop) {
+
+        if (!stop && firstT) {
+            thready.start();
+            firstT = false;
+        }
+
+
+        if (stop) {
+            thready.suspend();
+            thread.stopClip();
+        } else {
+            thready.resume();
         }
     }
 
