@@ -64,7 +64,7 @@ public class LibraryUI extends JPanel implements ActionListener {
     private JButton saveR;
     private JTextField rate;
     private JLabel genre;
-    private JLabel genreNum;
+    private JScrollPane genreNum;
     private JComboBox genres;
     private boolean pressed = false;
     JButton addGenre;
@@ -74,6 +74,7 @@ public class LibraryUI extends JPanel implements ActionListener {
     JTextField minRatingField;
     MusicThread thread = new MusicThread();
     Thread thready = new Thread(thread);
+    JTextArea area;
 
     private boolean searching = false;
     private String searchEntry;
@@ -163,9 +164,9 @@ public class LibraryUI extends JPanel implements ActionListener {
 
         ratingDetailsInit(novel);
 
-        genreDetailsInit(novel);
-
         statusDetailsInit(novel);
+
+        genreDetailsInit(novel);
 
         backButtonInit();
 
@@ -190,8 +191,14 @@ public class LibraryUI extends JPanel implements ActionListener {
         genre = new JLabel("Genre: ");
         genre.setFont(new Font("Ariel", Font.BOLD, 20));
 
-        genreNum = new JLabel(novel.getGenre().toString());
-        genreNum.setFont(new Font("Ariel", Font.BOLD, 10));
+        area = new JTextArea(3,1);
+        area.setEditable(false);
+        area.setFont(new Font("Ariel", Font.BOLD, 12));
+        for (String s : novel.getGenre()) {
+            area.append(s + "\n");
+        }
+        genreNum = new JScrollPane(area, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        genreNum.setPreferredSize(new Dimension(80,80));
 
 
         String[] genresList = {"Fantasy", "Sci-Fi", "Romance", "Comedy",
@@ -209,14 +216,20 @@ public class LibraryUI extends JPanel implements ActionListener {
         addGenre.setPreferredSize(new Dimension(65, 25));
         addGenre.addActionListener(e -> {
             novel.addGenre(genres.getSelectedIndex() + 1);
-            genreNum.setText(novel.getGenre().toString());
+            area.setText("");
+            for (String s : novel.getGenre()) {
+                area.append(s + "\n");
+            }
             repaint();
         });
         removeGenre = new JButton("Remove");
         removeGenre.setPreferredSize(new Dimension(80, 25));
         removeGenre.addActionListener(e -> {
             removeGen(novel, (String) genres.getSelectedItem());
-            genreNum.setText(novel.getGenre().toString());
+            area.setText("");
+            for (String s : novel.getGenre()) {
+                area.append(s + "\n");
+            }
             repaint();
         });
         this.add(genre);

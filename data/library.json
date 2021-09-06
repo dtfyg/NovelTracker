@@ -33,6 +33,55 @@
             "name": "Are you going to Kill me?",
             "rating": 3,
             "status": "c18"
+        },
+        {
+            "genres": [
+                "Yaoi/Yuri",
+                "Romance"
+            ],
+            "name": "The Heart of a Smith",
+            "rating": 2.5,
+            "status": "c9"
+        },
+        {
+            "genres": [
+                "Romance",
+                "Tragedy"
+            ],
+            "name": "Proffesional Stand-in",
+            "rating": 3.4,
+            "status": "Completed"
+        },
+        {
+            "genres": [
+                "Fantasy",
+                "LitRPG"
+            ],
+            "name": "Kairos",
+            "rating": 3.7,
+            "status": "c32"
+        },
+        {
+            "genres": [
+                "Fantasy",
+                "LitRPG",
+                "Comedy"
+            ],
+            "name": "The Perfect Run",
+            "rating": 4.15,
+            "status": "c72"
+        },
+        {
+            "genres": ["Fantasy"],
+            "name": "The Eagle's Flight",
+            "rating": 3.8,
+            "status": "c22"
+        },
+        {
+            "genres": [],
+            "name": "The Villain wants to live",
+            "rating": -1,
+            "status": "N/A"
         }
     ]
 }
