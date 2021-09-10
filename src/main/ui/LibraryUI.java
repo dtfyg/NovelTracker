@@ -684,7 +684,7 @@ public class LibraryUI extends JPanel implements ActionListener {
         try {
             fileButton1 = new JToggleButton("File 1: " + loader1.loadNames());
         } catch (IOException e) {
-            e.printStackTrace();
+            fileButton1 = new JToggleButton("File 1: Empty");
         } catch (JSONException j) {
             fileButton1 = new JToggleButton("File 1: Empty");
         }
@@ -704,7 +704,7 @@ public class LibraryUI extends JPanel implements ActionListener {
         try {
             fileButton2 = new JToggleButton("File 2: " + loader2.loadNames());
         } catch (IOException e) {
-            e.printStackTrace();
+            fileButton2 = new JToggleButton("File 2: Empty");
         } catch (JSONException j) {
             fileButton2 = new JToggleButton("File 2: Empty");
         }
@@ -722,7 +722,7 @@ public class LibraryUI extends JPanel implements ActionListener {
         try {
             fileButton3 = new JToggleButton("File 3: " + loader3.loadNames());
         } catch (IOException e) {
-            e.printStackTrace();
+            fileButton3 = new JToggleButton("File 3: Empty");
         } catch (JSONException j) {
             fileButton3 = new JToggleButton("File 3: Empty");
         }

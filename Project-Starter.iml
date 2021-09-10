@@ -13,7 +13,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library" scope="TEST">
+    <orderEntry type="module-library" exported="" scope="TEST">
       <library name="JUnit5.4">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/junit-jupiter-5.4.2.jar!/" />
@@ -29,8 +29,8 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="json-20200518" level="project" />
-    <orderEntry type="library" name="miglayout-core-4.3-20121116.151612-3-javadoc" level="project" />
-    <orderEntry type="library" name="MigLayout" level="project" />
+    <orderEntry type="library" exported="" name="json-20200518" level="project" />
+    <orderEntry type="library" exported="" name="miglayout-core-4.3-20121116.151612-3-javadoc" level="project" />
+    <orderEntry type="library" exported="" name="MigLayout" level="project" />
   </component>
 </module>
